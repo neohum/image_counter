@@ -13,3 +13,6 @@ data class GamePlay(
     val stageId: Int,
     val startLevel: Int = 1,
 )
+
+@Serializable
+object MathPlay

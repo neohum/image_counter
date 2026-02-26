@@ -11,6 +11,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -20,9 +22,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import coil3.compose.AsyncImage
+import com.imagecounter.game.R
 import com.imagecounter.game.model.GameImageState
+import com.imagecounter.game.model.ImageSource
 import com.imagecounter.game.ui.theme.SuccessGreen
 
 @Composable
@@ -61,12 +67,37 @@ fun GameImageItem(
             ),
         contentAlignment = Alignment.Center,
     ) {
-        Image(
-            painter = painterResource(id = imageState.drawableResId),
-            contentDescription = null,
-            modifier = Modifier.size(48.dp),
-            alpha = if (imageState.isTapped) 0.5f else 1f,
-        )
+        val imageAlpha = if (imageState.isTapped) 0.5f else 1f
+
+        when (val source = imageState.imageSource) {
+            is ImageSource.Local -> {
+                Image(
+                    painter = painterResource(id = source.resId),
+                    contentDescription = null,
+                    modifier = Modifier.size(48.dp),
+                    alpha = imageAlpha,
+                )
+            }
+            is ImageSource.Remote -> {
+                AsyncImage(
+                    model = source.url,
+                    contentDescription = null,
+                    modifier = Modifier.size(48.dp),
+                    contentScale = ContentScale.Fit,
+                    alpha = imageAlpha,
+                    placeholder = painterResource(R.drawable.ic_star),
+                    error = painterResource(R.drawable.ic_star),
+                )
+            }
+        }
+        if (imageState.value == 10) {
+            Text(
+                text = "10",
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+        }
         if (imageState.isTapped) {
             Icon(
                 imageVector = Icons.Filled.Check,

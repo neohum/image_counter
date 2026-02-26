@@ -5,7 +5,9 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.imagecounter.game.R
 import com.imagecounter.game.data.GameProgressRepository
+import com.imagecounter.game.data.ImageRepository
 import com.imagecounter.game.model.GameImageState
+import com.imagecounter.game.model.ImageSource
 import com.imagecounter.game.model.STAGES
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -16,6 +18,7 @@ import kotlin.random.Random
 class GamePlayViewModel(application: Application) : AndroidViewModel(application) {
 
     private val repository = GameProgressRepository(application)
+    private val imageRepository = ImageRepository()
 
     private val _uiState = MutableStateFlow<GameUiState>(GameUiState.Loading)
     val uiState: StateFlow<GameUiState> = _uiState.asStateFlow()
@@ -43,7 +46,8 @@ class GamePlayViewModel(application: Application) : AndroidViewModel(application
 
         _uiState.value = GameUiState.Ready(
             levelNumber = level.number,
-            totalImages = level.imageCount,
+            totalImages = level.totalImages,
+            targetValue = level.totalValue,
         )
     }
 
@@ -51,13 +55,37 @@ class GamePlayViewModel(application: Application) : AndroidViewModel(application
         val state = _uiState.value
         if (state !is GameUiState.Ready) return
 
-        val images = generateImages(state.totalImages)
-        _uiState.value = GameUiState.Playing(
+        val stage = STAGES.find { it.id == stageId } ?: return
+        val level = stage.levels.getOrNull(currentLevelIndex) ?: return
+
+        _uiState.value = GameUiState.FetchingImages(
             levelNumber = state.levelNumber,
-            images = images,
-            tappedCount = 0,
             totalImages = state.totalImages,
         )
+
+        viewModelScope.launch {
+            val imageSources = fetchImageSources(level.totalImages)
+            val images = generateImages(level, imageSources)
+            _uiState.value = GameUiState.Playing(
+                levelNumber = state.levelNumber,
+                images = images,
+                currentTappedValue = 0,
+                targetValue = state.targetValue,
+                tappedCount = 0,
+                totalImages = state.totalImages,
+            )
+        }
+    }
+
+    private suspend fun fetchImageSources(count: Int): List<ImageSource> {
+        val term = imageRepository.searchTerms.random()
+        val result = imageRepository.getImagesForTerm(term, limit = count)
+
+        return result.getOrNull()?.let { remoteImages ->
+            remoteImages.map { ImageSource.Remote(it.url) }
+        } ?: drawablePool.mapIndexed { index, _ ->
+            ImageSource.Local(drawablePool[index % drawablePool.size])
+        }
     }
 
     fun onImageTapped(imageId: Int) {
@@ -73,6 +101,7 @@ class GamePlayViewModel(application: Application) : AndroidViewModel(application
         }
 
         val newTappedCount = updatedImages.count { it.isTapped }
+        val newCurrentValue = updatedImages.sumOf { if (it.isTapped) it.value else 0 }
 
         if (newTappedCount >= state.totalImages) {
             viewModelScope.launch {
@@ -93,6 +122,7 @@ class GamePlayViewModel(application: Application) : AndroidViewModel(application
         } else {
             _uiState.value = state.copy(
                 images = updatedImages,
+                currentTappedValue = newCurrentValue,
                 tappedCount = newTappedCount,
             )
         }
@@ -103,13 +133,16 @@ class GamePlayViewModel(application: Application) : AndroidViewModel(application
         loadLevel()
     }
 
-    private fun generateImages(count: Int): List<GameImageState> {
+    private fun generateImages(
+        level: com.imagecounter.game.model.Level,
+        imageSources: List<ImageSource>,
+    ): List<GameImageState> {
         val images = mutableListOf<GameImageState>()
-        val imageSize = 0.12f // approximate fraction of the container
+        val imageSize = 0.12f
         val padding = 0.05f
 
-        for (i in 0 until count) {
-            val drawableResId = drawablePool[i % drawablePool.size]
+        val addImage = { value: Int ->
+            val source = imageSources[images.size % imageSources.size]
             var x: Float
             var y: Float
             var attempts = 0
@@ -126,13 +159,18 @@ class GamePlayViewModel(application: Application) : AndroidViewModel(application
 
             images.add(
                 GameImageState(
-                    id = i,
-                    drawableResId = drawableResId,
+                    id = images.size,
+                    imageSource = source,
                     xFraction = x,
                     yFraction = y,
+                    value = value,
                 )
             )
         }
-        return images
+
+        for (i in 0 until level.groupsOf10) addImage(10)
+        for (i in 0 until level.singleCount) addImage(1)
+
+        return images.shuffled()
     }
 }

@@ -7,6 +7,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
 import com.imagecounter.game.ui.gameplay.GamePlayScreen
 import com.imagecounter.game.ui.home.HomeScreen
+import com.imagecounter.game.ui.mathplay.MathPlayScreen
 import com.imagecounter.game.ui.stageselect.StageSelectScreen
 
 @Composable
@@ -17,7 +18,8 @@ fun AppNavGraph(navController: NavHostController) {
     ) {
         composable<Home> {
             HomeScreen(
-                onStartClick = { navController.navigate(StageSelect) }
+                onStartClick = { navController.navigate(StageSelect) },
+                onMathClick = { navController.navigate(MathPlay) }
             )
         }
         composable<StageSelect> {
@@ -35,6 +37,14 @@ fun AppNavGraph(navController: NavHostController) {
                 startLevel = route.startLevel,
                 onBackClick = { navController.popBackStack() },
                 onStageComplete = {
+                    navController.popBackStack(route = Home, inclusive = false)
+                }
+            )
+        }
+        composable<MathPlay> {
+            MathPlayScreen(
+                onBackClick = { navController.popBackStack() },
+                onGameComplete = {
                     navController.popBackStack(route = Home, inclusive = false)
                 }
             )

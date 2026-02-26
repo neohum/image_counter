@@ -21,6 +21,7 @@ import com.imagecounter.game.ui.theme.SecondaryLight
 @Composable
 fun HomeScreen(
     onStartClick: () -> Unit,
+    onMathClick: () -> Unit,
 ) {
     Column(
         modifier = Modifier
@@ -47,6 +48,12 @@ fun HomeScreen(
             text = stringResource(R.string.start_game),
             onClick = onStartClick,
             containerColor = SecondaryLight,
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+        GameButton(
+            text = "100제 연산 모드",
+            onClick = onMathClick,
+            containerColor = MaterialTheme.colorScheme.tertiary,
         )
     }
 }

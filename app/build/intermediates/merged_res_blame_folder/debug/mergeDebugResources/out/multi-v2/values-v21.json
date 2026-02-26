@@ -1,10 +1,10 @@
 {
     "logs": [
         {
-            "outputFile": "com.imagecounter.game.app-mergeDebugResources-53:/values-v21/values-v21.xml",
+            "outputFile": "com.imagecounter.game.app-mergeDebugResources-55:/values-v21/values-v21.xml",
             "map": [
                 {
-                    "source": "/Users/nm/.gradle/caches/8.9/transforms/f2680c2901ac50a5aba5eefab53009eb/transformed/core-1.15.0/res/values-v21/values-v21.xml",
+                    "source": "/Users/nm/.gradle/caches/8.9/transforms/16f6f81e82394f4c3864347fd7624a13/transformed/core-1.15.0/res/values-v21/values-v21.xml",
                     "from": {
                         "startLines": "2,3,4,5,6,7,8,9,10,13",
                         "startColumns": "4,4,4,4,4,4,4,4,4,4",

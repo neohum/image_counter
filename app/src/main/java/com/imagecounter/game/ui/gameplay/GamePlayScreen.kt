@@ -1,5 +1,6 @@
 package com.imagecounter.game.ui.gameplay
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -8,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -17,6 +19,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -31,6 +34,7 @@ import com.imagecounter.game.ui.components.GameProgressBar
 import com.imagecounter.game.ui.components.GameTopBar
 import com.imagecounter.game.ui.components.ResultDialog
 import com.imagecounter.game.ui.theme.SecondaryLight
+import com.imagecounter.game.util.SoundAndHapticHelper
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -44,6 +48,8 @@ fun GamePlayScreen(
     gamePlayViewModel: GamePlayViewModel = viewModel(),
 ) {
     val uiState by gamePlayViewModel.uiState.collectAsStateWithLifecycle()
+    val context = LocalContext.current
+    val hapticHelper = remember { SoundAndHapticHelper(context) }
 
     LaunchedEffect(stageId, startLevel) {
         gamePlayViewModel.initialize(stageId, startLevel)
@@ -53,6 +59,7 @@ fun GamePlayScreen(
         topBar = {
             val title = when (val state = uiState) {
                 is GameUiState.Loading -> stringResource(R.string.sense_of_quantity)
+                is GameUiState.FetchingImages -> stringResource(R.string.level_format, state.levelNumber)
                 is GameUiState.Ready -> stringResource(R.string.level_format, state.levelNumber)
                 is GameUiState.Playing -> stringResource(R.string.level_format, state.levelNumber)
                 is GameUiState.LevelComplete -> stringResource(R.string.level_format, state.levelNumber)
@@ -75,10 +82,16 @@ fun GamePlayScreen(
                     )
                 }
 
+                is GameUiState.FetchingImages -> {
+                    FetchingImagesContent(
+                        levelNumber = state.levelNumber,
+                    )
+                }
+
                 is GameUiState.Ready -> {
                     ReadyContent(
                         levelNumber = state.levelNumber,
-                        totalImages = state.totalImages,
+                        targetValue = state.targetValue,
                         onStartClick = { gamePlayViewModel.startPlaying() },
                     )
                 }
@@ -86,7 +99,10 @@ fun GamePlayScreen(
                 is GameUiState.Playing -> {
                     PlayingContent(
                         state = state,
-                        onImageTapped = { gamePlayViewModel.onImageTapped(it) },
+                        onImageTapped = { 
+                            hapticHelper.playTapFeedback()
+                            gamePlayViewModel.onImageTapped(it) 
+                        },
                     )
                 }
 
@@ -115,7 +131,7 @@ fun GamePlayScreen(
 @Composable
 private fun ReadyContent(
     levelNumber: Int,
-    totalImages: Int,
+    targetValue: Int,
     onStartClick: () -> Unit,
 ) {
     Column(
@@ -132,7 +148,7 @@ private fun ReadyContent(
         )
         Spacer(modifier = Modifier.height(16.dp))
         Text(
-            text = "이미지 ${totalImages}개를 찾아 탭하세요!",
+            text = "목표 숫자 ${targetValue}을(를) 달성하세요!",
             style = MaterialTheme.typography.titleMedium,
             color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f),
             textAlign = TextAlign.Center,
@@ -166,14 +182,14 @@ private fun PlayingContent(
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Text(
-                text = stringResource(R.string.count_format, state.tappedCount, state.totalImages),
+                text = "${state.currentTappedValue} / ${state.targetValue}",
                 style = MaterialTheme.typography.headlineMedium,
                 color = MaterialTheme.colorScheme.primary,
             )
             Spacer(modifier = Modifier.height(8.dp))
             GameProgressBar(
-                current = state.tappedCount,
-                total = state.totalImages,
+                current = state.currentTappedValue,
+                total = state.targetValue,
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
@@ -203,5 +219,26 @@ private fun PlayingContent(
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun FetchingImagesContent(
+    levelNumber: Int,
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(32.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
+    ) {
+        CircularProgressIndicator()
+        Spacer(modifier = Modifier.height(24.dp))
+        Text(
+            text = "이미지 준비 중...",
+            style = MaterialTheme.typography.titleMedium,
+            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f),
+        )
     }
 }
