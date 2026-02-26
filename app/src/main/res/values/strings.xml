@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">숫자깨치기</string>
+    <string name="home_title">숫자/양감 깨치기</string>
+    <string name="start_game">게임 시작</string>
+    <string name="stage_select">스테이지 선택</string>
+    <string name="stage_format">스테이지 %d</string>
+    <string name="level_format">레벨 %d</string>
+    <string name="count_format">%d / %d</string>
+    <string name="level_complete">레벨 완료!</string>
+    <string name="stage_complete">스테이지 완료!</string>
+    <string name="next_level">다음 레벨</string>
+    <string name="back_to_stages">스테이지 선택으로</string>
+    <string name="back">뒤로</string>
+    <string name="sense_of_quantity">양감 기르기</string>
+    <string name="tap_all_images">모든 이미지를 탭하세요!</string>
+</resources>
