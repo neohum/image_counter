@@ -1,0 +1,19 @@
+{
+    "logs": [
+        {
+            "outputFile": "com.imagecounter.game.app-mergeDebugResources-53:/values-v30/values-v30.xml",
+            "map": [
+                {
+                    "source": "/Users/nm/.gradle/caches/8.9/transforms/f604644400d0e0c8e90a139e4be169d0/transformed/material3-release/res/values-v30/values-v30.xml",
+                    "from": {
+                        "startLines": "2",
+                        "startColumns": "4",
+                        "startOffsets": "55",
+                        "endColumns": "72",
+                        "endOffsets": "123"
+                    }
+                }
+            ]
+        }
+    ]
+}

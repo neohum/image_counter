@@ -1,0 +1,38 @@
+[
+    {
+        "merged": "com.imagecounter.game.app-debug-55:/drawable_ic_fish.xml.flat",
+        "source": "com.imagecounter.game.app-main-57:/drawable/ic_fish.xml"
+    },
+    {
+        "merged": "com.imagecounter.game.app-debug-55:/drawable_ic_apple.xml.flat",
+        "source": "com.imagecounter.game.app-main-57:/drawable/ic_apple.xml"
+    },
+    {
+        "merged": "com.imagecounter.game.app-debug-55:/drawable_ic_flower.xml.flat",
+        "source": "com.imagecounter.game.app-main-57:/drawable/ic_flower.xml"
+    },
+    {
+        "merged": "com.imagecounter.game.app-debug-55:/drawable_ic_launcher_foreground.xml.flat",
+        "source": "com.imagecounter.game.app-main-57:/drawable/ic_launcher_foreground.xml"
+    },
+    {
+        "merged": "com.imagecounter.game.app-debug-55:/mipmap-anydpi-v26_ic_launcher.xml.flat",
+        "source": "com.imagecounter.game.app-main-57:/mipmap-anydpi-v26/ic_launcher.xml"
+    },
+    {
+        "merged": "com.imagecounter.game.app-debug-55:/mipmap-anydpi-v26_ic_launcher_round.xml.flat",
+        "source": "com.imagecounter.game.app-main-57:/mipmap-anydpi-v26/ic_launcher_round.xml"
+    },
+    {
+        "merged": "com.imagecounter.game.app-debug-55:/drawable_ic_heart.xml.flat",
+        "source": "com.imagecounter.game.app-main-57:/drawable/ic_heart.xml"
+    },
+    {
+        "merged": "com.imagecounter.game.app-debug-55:/drawable_ic_launcher_background.xml.flat",
+        "source": "com.imagecounter.game.app-main-57:/drawable/ic_launcher_background.xml"
+    },
+    {
+        "merged": "com.imagecounter.game.app-debug-55:/drawable_ic_star.xml.flat",
+        "source": "com.imagecounter.game.app-main-57:/drawable/ic_star.xml"
+    }
+]

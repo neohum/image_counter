@@ -6,7 +6,7 @@
     <string name="stage_select">스테이지 선택</string>
     <string name="stage_format">스테이지 %d</string>
     <string name="level_format">레벨 %d</string>
-    <string name="count_format">%d / %d</string>
+    <string name="count_format">%1$d / %2$d</string>
     <string name="level_complete">레벨 완료!</string>
     <string name="stage_complete">스테이지 완료!</string>
     <string name="next_level">다음 레벨</string>
